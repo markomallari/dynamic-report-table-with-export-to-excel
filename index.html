@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dynamic Report Exported by Marko</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script
+      data-require="angular.js@*"
+      data-semver="2.0.0"
+      src="https://code.angularjs.org/1.4.8/angular.js
+"
+    ></script>
+    <script
+      data-require="jquery@*"
+      data-semver="2.1.4"
+      src="https://code.jquery.com/jquery-2.1.4.js"
+    ></script>
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.0/moment.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body ng-app="myApp">
+    <div class="container-fluid" ng-controller="MyCtrl">
+      <h3>Dynamic Report Exporter</h3>
+      <div class="import">
+        <textarea
+          id="arrTextArea"
+          placeholder="example: [{data: data}]"
+        ></textarea>
+        <button class="button button2" ng-click="convertToTable()">
+          Import Data
+        </button>
+        <button
+          class="button button1"
+          ng-click="exportToExcel('#tableToExport')"
+        >
+          <span class="glyphicon glyphicon-share"></span>
+          Export To Excel
+        </button>
+      </div>
+      <div ng-if="records.length">
+        <div class="content">
+          <h4>Update Header Names / Remove Columns</h4>
+          <div
+            ng-repeat="header in colHeaders1 track by $index"
+            class="col-md-4 col-sm-6 col-xs-12"
+          >
+            <input
+              type="text"
+              ng-attr-id="{{ 'id-' + $index }}"
+              class="form-control input-m"
+              ng-value="header"
+              ng-model="header"
+              ng-change="changeHeader($index)"
+            />
+            <button
+              class="btn btn-danger remove-header"
+              ng-click="removeHeader($index)"
+            >
+              X
+            </button>
+          </div>
+        </div>
+        <h4>Table Results: {{records.length}}</h4>
+        <div class="table-wrapper" id="tableToExport">
+          <table border="1">
+            <thead>
+              <tr class="table-header">
+                <th ng-repeat="header in colHeaders1 track by $index">
+                  {{ header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="x in records track by $index">
+                <td ng-repeat="header in colHeaders2  track by $index">
+                  {{ header === 'date_created' ? convert(x[header]) : (header
+                  === 'date_last_used' ? convert(x[header]) : x[header]) }}
+                </td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <td ng-repeat="header in colHeaders2  track by $index">
+                  <strong>
+                    {{ header === 'total_contacts' ? getTotalContacts(x[header])
+                    : (header === 'valid_contacts' ?
+                    getTotalValidContacts(x[header]) : x[header]) }}
+                  </strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
