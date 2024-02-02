@@ -35,6 +35,22 @@ myApp
     $scope.convertToTable = function () {
       var textArea = document.getElementById("arrTextArea").value;
       var formattedArray = JSON.parse(JSON.stringify(textArea));
+
+      try {
+        JSON.parse(formattedArray);
+      } catch (e) {
+        $scope.ResponseModel1 = {};
+        $scope.ResponseModel1.ResponseAlert1 = true;
+        $scope.ResponseModel1.ResponseType1 = "danger";
+        $scope.ResponseModel1.ResponseMessage1 =
+          "Invalid Array Object, Please use JSON formatter to correct white spaces and characters, etc";
+
+        $timeout(function () {
+          $scope.ResponseModel1.ResponseAlert1 = false;
+        }, 5000);
+        return;
+      }
+
       $scope.records = JSON.parse(formattedArray);
       var copyHeader = JSON.parse(
         JSON.stringify(Object.keys($scope.records[0]))

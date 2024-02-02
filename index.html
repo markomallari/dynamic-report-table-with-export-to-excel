@@ -28,6 +28,20 @@
   <body ng-app="myApp">
     <div class="container-fluid" ng-controller="MyCtrl">
       <h3>Dynamic Report Exporter</h3>
+      <div
+        class="alert alert-{{ResponseModel1.ResponseType1}}"
+        alert-dismissible
+        ng-show="ResponseModel1.ResponseAlert1"
+      >
+        <a
+          href="#"
+          class="close"
+          ng-click="ResponseModel1.ResponseAlert1 = false"
+          aria-label="close"
+          >&times;</a
+        >
+        <strong> {{ResponseModel1.ResponseMessage1}} </strong>
+      </div>
       <div class="import">
         <textarea
           id="arrTextArea"
@@ -39,12 +53,13 @@
         <button
           class="button button1"
           ng-click="exportToExcel('#tableToExport')"
+          ng-if="records.length && colHeaders1.length"
         >
           <span class="glyphicon glyphicon-share"></span>
           Export To Excel
         </button>
       </div>
-      <div ng-if="records.length">
+      <div ng-if="records.length && colHeaders1.length">
         <div class="content">
           <h4>Update Header Names / Remove Columns</h4>
           <div
