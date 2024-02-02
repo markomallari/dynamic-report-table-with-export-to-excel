@@ -44,21 +44,44 @@ myApp
     };
 
     $scope.changeHeader = function (i) {
-      console.log($scope.colHeaders1[i]);
-      console.log(document.getElementById(`id-${i}`).value);
-      $scope.colHeaders1[i] = document.getElementById(`id-${i}`).value;
+      $scope.ResponseModel = {};
+      var newDom = document.getElementById(`id-${i}`);
+      if ($scope.findDuplicateHeader($scope.colHeaders1, newDom.value)) {
+        newDom.classList.add("error");
+        $scope.ResponseModel.ResponseAlert = true;
+        $scope.ResponseModel.ResponseType = "danger";
+        $scope.ResponseModel.ResponseMessage =
+          "Same header name is not permitted";
+      } else {
+        newDom.classList.remove("error");
+        $scope.ResponseModel.ResponseAlert = false;
+        $scope.colHeaders1[i] = newDom.value;
+      }
+    };
+
+    $scope.findDuplicateHeader = function (arr, val) {
+      return arr.includes(val);
     };
 
     $scope.removeHeader = function (i) {
+      /** removing key on colHeader1 **/
       var arr = JSON.parse(JSON.stringify($scope.colHeaders1));
-      var arrRecord = JSON.parse(JSON.stringify($scope.records));
       var val = arr[i];
-      console.log(val);
       arr = arr.filter(function (item) {
         return item !== val;
       });
-
       $scope.colHeaders1 = arr;
+      /** removing key on colHeader2 **/
+      var arr2 = JSON.parse(JSON.stringify($scope.colHeaders2));
+      arr2 = arr2.filter(function (item, key) {
+        console.log(item);
+        console.log(key);
+        return key !== i;
+      });
+      console.log(arr2);
+      $scope.colHeaders2 = arr2;
+      /** updating row records **/
+      var arrRecord = JSON.parse(JSON.stringify($scope.records));
       var newRecords = [];
       for (var i = 0; i < arrRecord.length; i++) {
         var details = Object.keys(arrRecord[i])
@@ -69,21 +92,26 @@ myApp
           }, {});
         newRecords.push(details);
       }
-
       $scope.records = JSON.parse(JSON.stringify(newRecords));
+
       var copyHeader = JSON.parse(
         JSON.stringify(Object.keys($scope.records[0]))
       );
-      $scope.colHeaders1 = JSON.parse(JSON.stringify(copyHeader));
-      $scope.colHeaders2 = JSON.parse(JSON.stringify(copyHeader));
+      //$scope.colHeaders1 = JSON.parse(JSON.stringify(copyHeader));
+      //$scope.colHeaders2 = JSON.parse(JSON.stringify(copyHeader));
     };
 
-    $scope.convert = function (date) {
-      if (date) {
-        return moment(date).format("MMMM D, Y");
+    $scope.dataChecker = function (val) {
+      if ($scope.isDateValid(val)) {
+        return moment(val).format("MMMM D, Y");
       } else {
-        return "";
+        return val;
       }
+    };
+
+    $scope.isDateValid = function (val) {
+      var formats = [moment.ISO_8601, "MM/DD/YYYY  :)  HH*mm*ss"];
+      return moment(val, formats, true).isValid(); // true
     };
 
     $scope.getTotalContacts = function () {

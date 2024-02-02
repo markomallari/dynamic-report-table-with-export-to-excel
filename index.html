@@ -48,6 +48,20 @@
         <div class="content">
           <h4>Update Header Names / Remove Columns</h4>
           <div
+            class="alert alert-{{ResponseModel.ResponseType}}"
+            alert-dismissible
+            ng-show="ResponseModel.ResponseAlert"
+          >
+            <a
+              href="#"
+              class="close"
+              ng-click="ResponseModel.ResponseAlert = false"
+              aria-label="close"
+              >&times;</a
+            >
+            <strong> {{ResponseModel.ResponseMessage}} </strong>
+          </div>
+          <div
             ng-repeat="header in colHeaders1 track by $index"
             class="col-md-4 col-sm-6 col-xs-12"
           >
@@ -79,9 +93,8 @@
             </thead>
             <tbody>
               <tr ng-repeat="x in records track by $index">
-                <td ng-repeat="header in colHeaders2  track by $index">
-                  {{ header === 'date_created' ? convert(x[header]) : (header
-                  === 'date_last_used' ? convert(x[header]) : x[header]) }}
+                <td ng-repeat="header in colHeaders2 track by $index">
+                  {{ dataChecker(x[header]) }}
                 </td>
               </tr>
             </tbody>
