@@ -23,14 +23,14 @@ myApp
     };
   })
   .controller("MyCtrl", function (Excel, $timeout, $scope) {
+    $scope.records = [];
+
     $scope.exportToExcel = function (tableId) {
       var exportHref = Excel.tableToExcel(tableId, "WireWorkbenchDataExport");
       $timeout(function () {
         location.href = exportHref;
       }, 100);
     };
-
-    $scope.records = [];
 
     $scope.convertToTable = function () {
       var textArea = document.getElementById("arrTextArea").value;
@@ -109,12 +109,6 @@ myApp
         newRecords.push(details);
       }
       $scope.records = JSON.parse(JSON.stringify(newRecords));
-
-      var copyHeader = JSON.parse(
-        JSON.stringify(Object.keys($scope.records[0]))
-      );
-      //$scope.colHeaders1 = JSON.parse(JSON.stringify(copyHeader));
-      //$scope.colHeaders2 = JSON.parse(JSON.stringify(copyHeader));
     };
 
     $scope.dataChecker = function (val) {
