@@ -1,4 +1,3 @@
-// Code goes here
 var myApp = angular.module("myApp", []);
 myApp
   .factory("Excel", function ($window) {
@@ -34,10 +33,10 @@ myApp
 
     $scope.convertToTable = function () {
       var textArea = document.getElementById("arrTextArea").value;
-      var formattedArray = JSON.parse(JSON.stringify(textArea));
+      var formattedArray = $scope.cloneItem(textArea);
 
       try {
-        JSON.parse(formattedArray);
+        $scope.parseItem(formattedArray);
       } catch (e) {
         $scope.ResponseModel1 = {};
         $scope.ResponseModel1.ResponseAlert1 = true;
@@ -50,13 +49,22 @@ myApp
         }, 5000);
         return;
       }
+      //for body row datas
+      $scope.records = $scope.parseItem(formattedArray);
 
-      $scope.records = JSON.parse(formattedArray);
-      var copyHeader = JSON.parse(
-        JSON.stringify(Object.keys($scope.records[0]))
+      //for header row datas
+      const formatted = $scope.parseItem(formattedArray);
+      let uniqueHeader = [];
+      formatted.map((val) => {
+        uniqueHeader = [...uniqueHeader, ...Object.keys(val)];
+      });
+      const headers = uniqueHeader.filter(
+        (item, index) => uniqueHeader.indexOf(item) === index
       );
+
+      var copyHeader = $scope.cloneItem(headers);
       $scope.colHeaders1 = copyHeader;
-      $scope.colHeaders2 = JSON.parse(JSON.stringify(copyHeader));
+      $scope.colHeaders2 = $scope.cloneItem(copyHeader);
     };
 
     $scope.changeHeader = function (i) {
@@ -81,23 +89,20 @@ myApp
 
     $scope.removeHeader = function (i) {
       /** removing key on colHeader1 **/
-      var arr = JSON.parse(JSON.stringify($scope.colHeaders1));
+      var arr = $scope.cloneItem($scope.colHeaders1);
       var val = arr[i];
       arr = arr.filter(function (item) {
         return item !== val;
       });
       $scope.colHeaders1 = arr;
       /** removing key on colHeader2 **/
-      var arr2 = JSON.parse(JSON.stringify($scope.colHeaders2));
+      var arr2 = $scope.cloneItem($scope.colHeaders2);
       arr2 = arr2.filter(function (item, key) {
-        console.log(item);
-        console.log(key);
         return key !== i;
       });
-      console.log(arr2);
       $scope.colHeaders2 = arr2;
       /** updating row records **/
-      var arrRecord = JSON.parse(JSON.stringify($scope.records));
+      var arrRecord = $scope.cloneItem($scope.records);
       var newRecords = [];
       for (var i = 0; i < arrRecord.length; i++) {
         var details = Object.keys(arrRecord[i])
@@ -108,7 +113,7 @@ myApp
           }, {});
         newRecords.push(details);
       }
-      $scope.records = JSON.parse(JSON.stringify(newRecords));
+      $scope.records = $scope.cloneItem(newRecords);
     };
 
     $scope.dataChecker = function (val) {
@@ -140,5 +145,13 @@ myApp
         total += product;
       }
       return total;
+    };
+
+    $scope.cloneItem = function (item) {
+      return $scope.parseItem(JSON.stringify(item));
+    };
+
+    $scope.parseItem = function (item) {
+      return JSON.parse(item);
     };
   });
